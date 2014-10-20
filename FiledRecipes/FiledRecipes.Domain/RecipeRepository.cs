@@ -127,5 +127,87 @@ namespace FiledRecipes.Domain
                 handler(this, e);
             }
         }
+
+
+		public void Save()
+		{
+		}
+		public void Load()
+		{
+			RecipeReadStatus nextLineType = RecipeReadStatus.Indefinite; // { Indefinite, New, Ingredient, Instruction }
+			// Samling för recept av typen Recipe.
+            List<IRecipe> recipies = new List<IRecipe>(); 
+
+            // Öppnar filen med resultat och...
+			using (StreamReader reader = new StreamReader(_path))
+			{
+				Recipe recipe = null;
+				string line;
+                // ...läser den rad för rad.
+				while ((line = reader.ReadLine()) != null)
+				{
+
+					if (line.Length == 0)
+					{
+						// do nothing, read another line
+					}
+					else if (line.Contains(SectionRecipe))
+					{
+						// Next line will be the recipie name
+						nextLineType = RecipeReadStatus.New;
+					}
+					else if (line.Contains(SectionIngredients))
+					{
+						nextLineType = RecipeReadStatus.Ingredient;
+					}
+					else if (line.Contains(SectionInstructions))
+					{
+						nextLineType = RecipeReadStatus.Instruction;
+					}
+					else
+					{
+
+						if (nextLineType == RecipeReadStatus.New)
+						{
+							recipe = new Recipe(line);
+							recipies.Add(recipe);
+						}
+						else if (nextLineType == RecipeReadStatus.Ingredient)
+						{
+							string[] parts = line.Split(';');
+							if (parts.Length != 3)
+							{
+								throw new FileFormatException("En rad med ingredienser innehåller inte tre semikolonseparerade element");
+							}
+							Ingredient ingredient = new Ingredient();
+							ingredient.Amount = parts[0];
+							ingredient.Measure = parts[1];
+							ingredient.Name = parts[2];
+							if (recipe != null)
+								recipe.Add(ingredient);
+						}
+						else if (nextLineType == RecipeReadStatus.Instruction)
+						{
+							recipe.Add(line);
+						}
+						else
+						{
+							throw new FileFormatException("Ingen uppfattning om vad en rad i receptfilen representerar");
+						}
+					}
+				}
+
+				// List.Sort<Recipe>(recipies); 
+				recipies.Sort();  // comparer ???
+
+				_recipes = recipies;
+				IsModified = true;
+				OnRecipesChanged(EventArgs.Empty);
+
+
+
+			}
+
+		}
     }
 }

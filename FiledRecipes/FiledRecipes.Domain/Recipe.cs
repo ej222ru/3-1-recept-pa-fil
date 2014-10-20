@@ -8,7 +8,7 @@ namespace FiledRecipes.Domain
     /// <summary>
     /// Provides members to manage a recipe.
     /// </summary>
-    public class Recipe : IRecipe, IEquatable<Recipe>, IComparable, IComparable<Recipe>
+    public class	Recipe : IRecipe, IEquatable<Recipe>, IComparable, IComparable<Recipe>
     {
         /// <summary>
         /// The name of the recipe.
