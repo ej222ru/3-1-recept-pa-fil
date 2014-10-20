@@ -45,17 +45,32 @@ namespace FiledRecipes.Views
 			ShowHeaderPanel();
 			Console.WriteLine("");
 
-
-			//VievHeader(recipe.Name);
 			Console.WriteLine(Strings1.ingredients);
-			string frameLine = new string('-', Strings1.ingredients.Length);
-			Console.WriteLine(frameLine);
-			//for (int i=0; i<recipe.Ingredients.
 
+			foreach (IIngredient ingredient in recipe.Ingredients)
+			{
+				Console.WriteLine(ingredient);
+			}
+
+			Console.WriteLine("");
+			Console.WriteLine(Strings1.instructions);
+			string frameLine = new string('-', Strings1.instructions.Length);
+			Console.WriteLine(frameLine);
+			int index = 1;
+			foreach (string instruction in recipe.Instructions)
+			{
+				Console.WriteLine(string.Format("<{0}>", index));
+				Console.WriteLine(instruction);
+				index++;
+			}
 		}
 		public void Show(IEnumerable<IRecipe> recipes)
 		{
-
+			foreach (IRecipe recipie in recipes)
+			{
+				Show(recipie);
+				ContinueOnKeyPressed();
+			}
 		}
     }
 }
