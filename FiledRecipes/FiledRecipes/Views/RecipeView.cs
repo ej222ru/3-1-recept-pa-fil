@@ -11,19 +11,6 @@ namespace FiledRecipes.Views
     /// 
     /// </summary>
 	/// 
-	static class Extensions
-	{
-
-		public static string CenterAlignString(this string s, string other)
-		{
-			int spaces = ((other.Length - s.Length) / 2);
-			int odd = ((other.Length - s.Length) % 2);
-
-			string padLeft = "||".PadRight(spaces);
-			string padRight = "||".PadLeft(spaces + odd);
-			return string.Format("{0}{1}{2}", padLeft, s, padRight);
-		}
-	}
 
     public class RecipeView : ViewBase, IRecipeView
     {
@@ -41,20 +28,20 @@ namespace FiledRecipes.Views
 		public void Show(IRecipe recipe)
 		{
 			Console.Clear();
+			string frameLine = new string('-', Strings1.instructions.Length); 
 			Header = recipe.Name;
 			ShowHeaderPanel();
+
 			Console.WriteLine("");
-
 			Console.WriteLine(Strings1.ingredients);
-
-			foreach (IIngredient ingredient in recipe.Ingredients)
+			Console.WriteLine(frameLine);
+			foreach (Ingredient ingredient in recipe.Ingredients)
 			{
 				Console.WriteLine(ingredient);
 			}
 
 			Console.WriteLine("");
 			Console.WriteLine(Strings1.instructions);
-			string frameLine = new string('-', Strings1.instructions.Length);
 			Console.WriteLine(frameLine);
 			int index = 1;
 			foreach (string instruction in recipe.Instructions)
@@ -66,7 +53,7 @@ namespace FiledRecipes.Views
 		}
 		public void Show(IEnumerable<IRecipe> recipes)
 		{
-			foreach (IRecipe recipie in recipes)
+			foreach (Recipe recipie in recipes)
 			{
 				Show(recipie);
 				ContinueOnKeyPressed();

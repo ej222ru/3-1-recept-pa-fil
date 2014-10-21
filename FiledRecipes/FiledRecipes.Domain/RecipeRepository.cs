@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace FiledRecipes.Domain
 {
@@ -131,7 +132,32 @@ namespace FiledRecipes.Domain
 
 		public void Save()
 		{
+            // Öppnar filen med resultat och...
+			using (StreamWriter writer = new StreamWriter(_path))
+			{
+				foreach (Recipe recipe in _recipes)
+				{
+					writer.WriteLine(SectionRecipe);
+					writer.WriteLine(recipe.Name);
+					writer.WriteLine(SectionIngredients);
+
+					foreach (Ingredient ingredient in recipe.Ingredients)
+					{
+						string ingr = String.Format("{0};{1};{2}", ingredient.Amount, ingredient.Measure, ingredient.Name);
+						writer.WriteLine(ingr.Trim());
+					}
+
+					writer.WriteLine(SectionInstructions); 
+					foreach (string instruction in recipe.Instructions)
+					{
+						writer.WriteLine(instruction);
+					}
+				}
+				IsModified = false;
+			}
+			OnRecipesChanged(EventArgs.Empty);
 		}
+
 		public void Load()
 		{
 			RecipeReadStatus nextLineType = RecipeReadStatus.Indefinite; // { Indefinite, New, Ingredient, Instruction }
@@ -146,7 +172,6 @@ namespace FiledRecipes.Domain
                 // ...läser den rad för rad.
 				while ((line = reader.ReadLine()) != null)
 				{
-
 					if (line.Length == 0)
 					{
 						// do nothing, read another line
@@ -166,7 +191,6 @@ namespace FiledRecipes.Domain
 					}
 					else
 					{
-
 						if (nextLineType == RecipeReadStatus.New)
 						{
 							recipe = new Recipe(line);
@@ -201,13 +225,9 @@ namespace FiledRecipes.Domain
 				recipies.Sort();  // comparer ???
 
 				_recipes = recipies;
-				IsModified = true;
+				IsModified = false;
 				OnRecipesChanged(EventArgs.Empty);
-
-
-
 			}
-
 		}
     }
 }
